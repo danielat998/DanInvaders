@@ -1,24 +1,26 @@
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
-import java.awt._
+import java.awt._//not sure why this doesn't import the above two things
 import javax.swing.JFrame
 import javax.swing.JPanel
-class GUI(game:Game) extends JFrame with ActionListener{
+class GUI(game:Game,givenWidth:Int,givenHeight:Int) extends JFrame with ActionListener{
+	var GUIWidth = givenWidth
+	var GUIHeight = givenHeight
 	this.initUI
-	var canvas:GameCanvas = new GameCanvas(400,200)
+	var canvas:GameCanvas = new GameCanvas(GUIWidth,GUIHeight,game)
 	def actionPerformed(e:ActionEvent){}
  	def initUI{
-		canvas = new GameCanvas(400,200)//don't ask why this is being done twice it just keeps the compiler happy
+		canvas = new GameCanvas(GUIWidth,GUIHeight,game)//don't ask why this is being done twice it just keeps the compiler happy
 		this.add(canvas)
 		setTitle("DanTetris version " /*+ Globals.version*/)
-		setSize(400,200)
+		setSize(GUIWidth,GUIHeight)
 		//setDefaultCloseOperation(EXIT_ON_CLOSE)
 		pack
 		this.setVisible(true)
 	}
 }
 
-class GameCanvas(x:Int,y:Int) extends JPanel{
+class GameCanvas(x:Int,y:Int,game:Game) extends JPanel{
 	setPreferredSize(new Dimension(x,y))
 	setBackground(Color.BLACK)
 
@@ -27,17 +29,43 @@ class GameCanvas(x:Int,y:Int) extends JPanel{
 		plotAliens(g)
 		plotMothership(g)
 		plotPlayer(g)
+		plotExcrement(g)
+		plotBullet(g)
 	}
 
+	def plotExcrement(g:Graphics){}//this will probably be an ArrayList or similar
+	def plotBullet(g:Graphics){}//have vars in Game for position of this as ther will only be one
+
 	def clearCanvas(g:Graphics){
+		val oldColour:Color = g.getColor
+		g.setColor(Color.black)
+		g.fillRect(0,0,x,y)
+		g.setColor(oldColour)
 	}
 
 	def plotAliens(g:Graphics){
 		//loop through some sort of array in Game
+		val oldColour:Color = g.getColor
+		g.setColor(Color.white)
+		var i =0
+		var j = 0
+		for(i <- 0 to (game.alienArr.length - 1))
+			for(j <- 0 to (game.alienArr(0).length -1))
+				g.fillRect(game.aliensTopX + i*game.ALIEN_WIDTH + i * game.ALIEN_HORIZ_SPACING,
+									 game.aliensTopY + j*game.ALIEN_HEIGHT + j * game.ALIEN_VERT_SPACING,
+									 game.ALIEN_WIDTH,
+									 game.ALIEN_HEIGHT
+									 )
+		g.setColor(oldColour)
 	}
 
 	def plotMothership(g:Graphics){
 	}
 	def plotPlayer(g:Graphics){
+		//just a block for now
+		val oldColour:Color = g.getColor
+		g.setColor(Color.white)
+		g.fillRect(game.playerX,y-30,30,30)
+		g.setColor(oldColour)
 	}
 }
