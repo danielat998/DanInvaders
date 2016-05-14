@@ -1,12 +1,18 @@
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
+import java.awt.event.KeyEvent
 import java.awt._//not sure why this doesn't import the above two things
 import javax.swing.JFrame
 import javax.swing.JPanel
+import javax.swing.Action
+import javax.swing.AbstractAction
+import javax.swing.KeyStroke
+import collection.mutable.HashMap
 class GUI(game:Game,givenWidth:Int,givenHeight:Int) extends JFrame with ActionListener{
 	var GUIWidth = givenWidth
 	var GUIHeight = givenHeight
 	this.initUI
+	this.initKeyboard
 	var canvas:GameCanvas = new GameCanvas(GUIWidth,GUIHeight,game)
 	def actionPerformed(e:ActionEvent){}
  	def initUI{
@@ -18,12 +24,24 @@ class GUI(game:Game,givenWidth:Int,givenHeight:Int) extends JFrame with ActionLi
 		pack
 		this.setVisible(true)
 	}
+	private val actionMap = new HashMap[KeyStroke,Action]
+	def initKeyboard{
+	/*	val left = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,0)
+		actionMap.put(left, new AbstractAction("Move Left"){
+			override def actionPerformed(e:ActionEvent){
+				println("hello")
+			}
+		})//actionMap.put
+	*/
+	}
 }
 
 class GameCanvas(x:Int,y:Int,game:Game) extends JPanel{
 	setPreferredSize(new Dimension(x,y))
 	setBackground(Color.BLACK)
 
+	//before you say anything, yes replotting every time is horribly inefficient, but it
+	//is how I have chosen to implement things for the time being
 	override def paintComponent(g:Graphics){
 		clearCanvas(g)
 		plotAliens(g)
@@ -68,4 +86,5 @@ class GameCanvas(x:Int,y:Int,game:Game) extends JPanel{
 		g.fillRect(game.playerX,y-30,30,30)
 		g.setColor(oldColour)
 	}
+
 }
