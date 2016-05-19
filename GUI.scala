@@ -7,16 +7,18 @@ import javax.swing.JPanel
 import javax.swing.Action
 import javax.swing.AbstractAction
 import javax.swing.KeyStroke
+import javax.swing.SwingUtilities
 import collection.mutable.HashMap
 class GUI(game:Game,givenWidth:Int,givenHeight:Int) extends JFrame with ActionListener{
+	private val actionMap = new HashMap[KeyStroke,Action]
 	var GUIWidth = givenWidth
 	var GUIHeight = givenHeight
+	val canvas:GameCanvas = new GameCanvas(givenWidth,givenHeight,game)
 	this.initUI
 	this.initKeyboard
-	var canvas:GameCanvas = new GameCanvas(GUIWidth,GUIHeight,game)
 	def actionPerformed(e:ActionEvent){}
  	def initUI{
-		canvas = new GameCanvas(GUIWidth,GUIHeight,game)//don't ask why this is being done twice it just keeps the compiler happy
+		//canvas = new GameCanvas(GUIWidth,GUIHeight,game)//don't ask why this is being done twice it just keeps the compiler happy
 		this.add(canvas)
 		setTitle("DanTetris version " /*+ Globals.version*/)
 		setSize(GUIWidth,GUIHeight)
@@ -24,17 +26,43 @@ class GUI(game:Game,givenWidth:Int,givenHeight:Int) extends JFrame with ActionLi
 		pack
 		this.setVisible(true)
 	}
-	private val actionMap = new HashMap[KeyStroke,Action]
 	def initKeyboard{
-	/*	val left = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,0)
+		//could do some Scala matching stuff here instead???
+		val left = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,0)
 		actionMap.put(left, new AbstractAction("Move Left"){
 			override def actionPerformed(e:ActionEvent){
-				println("hello")
+				game.movePlayerX(-10)
 			}
 		})//actionMap.put
-	*/
+
+		val right = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,0)
+		actionMap.put(right, new AbstractAction("Move Right"){
+			override def actionPerformed(e:ActionEvent){
+				game.movePlayerX(10)
+			}
+		})//actionMap.put
+
+		val kfm:KeyboardFocusManager=KeyboardFocusManager.getCurrentKeyboardFocusManager()
+		kfm.addKeyEventDispatcher(new KeyEventDispatcher(){
+			override def dispatchKeyEvent(e:KeyEvent):Boolean = {
+				var returnVal:Boolean = false
+				val keyStroke:KeyStroke = KeyStroke.getKeyStrokeForEvent(e)
+				if(actionMap.contains(keyStroke)){
+					val a:Action = actionMap.get(keyStroke).get
+					val ae:ActionEvent = new ActionEvent(e.getSource,e.getID(),null)
+					SwingUtilities.invokeLater(new Runnable(){
+						override def run(){
+							a.actionPerformed(ae)
+						}
+					});
+					returnVal = true
+				}
+				//else returnVal == false
+				returnVal
+			}
+		});
 	}
-}
+}//GUI
 
 class GameCanvas(x:Int,y:Int,game:Game) extends JPanel{
 	setPreferredSize(new Dimension(x,y))
