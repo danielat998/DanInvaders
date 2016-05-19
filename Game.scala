@@ -6,6 +6,11 @@ object Main{
   }
 }
 class Game{
+	var ammoX = 0
+	var ammoY = -1
+	var AMMO_STEP = 10
+	var AMMO_WIDTH = 5
+	var AMMO_HEIGHT = 20
 	var alienDirRight = true //false means left
 	val ALIEN_HORIZ_STEP = 10
 	val ALIEN_VERT_STEP = 10
@@ -51,8 +56,47 @@ class Game{
 					lives -= 1
 				if (lives == 0)
 					gameOver = true
+				moveAmmo
+				checkAndKillAliens
 			}
 			gui.canvas.repaint()
+		}
+	}
+
+	def checkAndKillAliens{
+		//foreach alien
+    for(i <- 0 to (alienArr.length - 1)){
+      for(j <- 0 to (alienArr(0).length -1)){
+				//check for intersection
+				//define these for logic readability (leftmost point of current alien et. c.)
+				var leftmostAlien = aliensTopX + i * (ALIEN_HORIZ_SPACING + ALIEN_WIDTH)
+				var rightmostAlien = aliensTopX + i * (ALIEN_HORIZ_SPACING + ALIEN_WIDTH) + ALIEN_WIDTH
+				var leftmostAmmo = ammoX
+				var rightmostAmmo = ammoX + AMMO_WIDTH
+				var topmostAlien = aliensTopY + i * (ALIEN_VERT_SPACING + ALIEN_HEIGHT)
+				var lowermostAlien = aliensTopY + i * (ALIEN_VERT_SPACING + ALIEN_HEIGHT) + ALIEN_HEIGHT
+				var topMostAmmo = ammoY
+				var lowermostAmmo = ammoY + AMMO_HEIGHT
+				//if they don't intersect vertically AND don't intersect vertically
+				if ( (! ((leftmostAlien > rightmostAmmo) || (rightmostAlien < leftmostAmmo)))
+			    && (! ((topmostAlien  > lowermostAmmo) || (lowermostAlien < topMostAmmo )))   ){
+					alienArr(i)(j) = alienEnum.NO_ALIEN
+				}
+			}
+		}
+	}
+
+	def moveAmmo{
+		if (ammoY != -1)
+			ammoY -= AMMO_STEP//move it upwards steadily
+		if (ammoY <=0)
+			ammoY = -1
+	}
+
+	def shoot{
+		if (ammoY == -1){//cannot shoot if a bullet is already moving
+			ammoX = playerX + (playerWidth / 2)
+			ammoY = gui.GUIHeight
 		}
 	}
 
