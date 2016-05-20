@@ -20,7 +20,7 @@ class GUI(game:Game,givenWidth:Int,givenHeight:Int) extends JFrame with ActionLi
  	def initUI{
 		//canvas = new GameCanvas(GUIWidth,GUIHeight,game)//don't ask why this is being done twice it just keeps the compiler happy
 		this.add(canvas)
-		setTitle("DanTetris version " /*+ Globals.version*/)
+		setTitle("DanInvaders version " + game.VERSION)
 		setSize(GUIWidth,GUIHeight)
 		//setDefaultCloseOperation(EXIT_ON_CLOSE)
 		pack
@@ -39,6 +39,12 @@ class GUI(game:Game,givenWidth:Int,givenHeight:Int) extends JFrame with ActionLi
 		actionMap.put(right, new AbstractAction("Move Right"){
 			override def actionPerformed(e:ActionEvent){
 				game.movePlayerX(10)
+			}
+		})//actionMap.put
+		val space = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,0)
+		actionMap.put(space, new AbstractAction("Shoot"){
+			override def actionPerformed(e:ActionEvent){
+				game.shoot
 			}
 		})//actionMap.put
 
@@ -76,7 +82,7 @@ class GameCanvas(x:Int,y:Int,game:Game) extends JPanel{
 		plotMothership(g)
 		plotPlayer(g)
 		plotExcrement(g)
-		plotBullet(g)
+		plotAmmo(g)
 	}
 
 	def plotExcrement(g:Graphics){}//this will probably be an ArrayList or similar
@@ -89,6 +95,15 @@ class GameCanvas(x:Int,y:Int,game:Game) extends JPanel{
 		g.setColor(oldColour)
 	}
 
+	def plotAmmo(g:Graphics){
+		if (game.ammoY != -1){
+			val oldColour:Color = g.getColor
+			g.setColor(Color.white)
+			g.fillRect(game.ammoX,game.ammoY,game.AMMO_WIDTH,game.AMMO_HEIGHT)
+			g.setColor(oldColour)
+		}
+	}
+
 	def plotAliens(g:Graphics){
 		//loop through some sort of array in Game
 		val oldColour:Color = g.getColor
@@ -97,11 +112,13 @@ class GameCanvas(x:Int,y:Int,game:Game) extends JPanel{
 		var j = 0
 		for(i <- 0 to (game.alienArr.length - 1))
 			for(j <- 0 to (game.alienArr(0).length -1))
-				g.fillRect(game.aliensTopX + i*game.ALIEN_WIDTH + i * game.ALIEN_HORIZ_SPACING,
-									 game.aliensTopY + j*game.ALIEN_HEIGHT + j * game.ALIEN_VERT_SPACING,
-									 game.ALIEN_WIDTH,
-									 game.ALIEN_HEIGHT
-									 )
+				if(game.alienArr(i)(j) == game.alienEnum.ALIEN1){
+					g.fillRect(game.aliensTopX + i * (game.ALIEN_WIDTH + game.ALIEN_HORIZ_SPACING),
+										 game.aliensTopY + j * (game.ALIEN_HEIGHT + game.ALIEN_VERT_SPACING),
+										 game.ALIEN_WIDTH,
+										 game.ALIEN_HEIGHT
+										 )
+				}
 		g.setColor(oldColour)
 	}
 

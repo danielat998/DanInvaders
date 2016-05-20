@@ -6,6 +6,7 @@ object Main{
   }
 }
 class Game{
+	val VERSION = 0.01
 	var ammoX = 0
 	var ammoY = -1
 	var AMMO_STEP = 10
@@ -68,18 +69,18 @@ class Game{
     for(i <- 0 to (alienArr.length - 1)){
       for(j <- 0 to (alienArr(0).length -1)){
 				//check for intersection
-				//define these for logic readability (leftmost point of current alien et. c.)
+				//define these for logic readability (leftmost POINT of current alien et. c.)
 				var leftmostAlien = aliensTopX + i * (ALIEN_HORIZ_SPACING + ALIEN_WIDTH)
 				var rightmostAlien = aliensTopX + i * (ALIEN_HORIZ_SPACING + ALIEN_WIDTH) + ALIEN_WIDTH
 				var leftmostAmmo = ammoX
 				var rightmostAmmo = ammoX + AMMO_WIDTH
-				var topmostAlien = aliensTopY + i * (ALIEN_VERT_SPACING + ALIEN_HEIGHT)
-				var lowermostAlien = aliensTopY + i * (ALIEN_VERT_SPACING + ALIEN_HEIGHT) + ALIEN_HEIGHT
+				var topmostAlien = aliensTopY + j * (ALIEN_VERT_SPACING + ALIEN_HEIGHT)
+				var lowermostAlien = aliensTopY + j * (ALIEN_VERT_SPACING + ALIEN_HEIGHT) + ALIEN_HEIGHT
 				var topMostAmmo = ammoY
 				var lowermostAmmo = ammoY + AMMO_HEIGHT
-				//if they don't intersect vertically AND don't intersect vertically
+				//if they intersect vertically AND intersect horizontally
 				if ( (! ((leftmostAlien > rightmostAmmo) || (rightmostAlien < leftmostAmmo)))
-			    && (! ((topmostAlien  > lowermostAmmo) || (lowermostAlien < topMostAmmo )))   ){
+								&& (! ((topmostAlien  > lowermostAmmo) || (lowermostAlien < topMostAmmo )))   ){
 					alienArr(i)(j) = alienEnum.NO_ALIEN
 				}
 			}
