@@ -9,7 +9,7 @@ class Game{
 	val VERSION = 0.01
 	var ammoX = 0
 	var ammoY = -1
-	var AMMO_STEP = 10
+	var AMMO_STEP = 20
 	var AMMO_WIDTH = 5
 	var AMMO_HEIGHT = 20
 	var alienDirRight = true //false means left
@@ -23,10 +23,11 @@ class Game{
 	val ALIEN_HORIZ_SPACING = 20
 	val ALIEN_VERT_SPACING = 10
 	val ALIEN_HEIGHT = 10
-	val noAliensX = 6
-	val noAliensY = 4
+	val NO_ALIENS_X = 6
+	val NO_ALIENS_Y = 4
 	var aliensTopX = 30
 	var aliensTopY = 30
+	val GAME_OVER_Y = gui.GUIHeight
 	object alienEnum extends Enumeration{
 		type alienEnum = Value
 		val ALIEN1, ALIEN2, ALIEN3, NO_ALIEN = Value
@@ -101,7 +102,13 @@ class Game{
 		}
 	}
 
-	def aliensReachedBottom = false
+	//should be modified so that the lowest ALIVE alien is at bottom... 
+	def aliensReachedBottom:Boolean =
+		if (aliensTopY + NO_ALIENS_X *(ALIEN_HEIGHT + ALIEN_VERT_SPACING) >= GAME_OVER_Y)
+				true
+		else
+				false
+	
 	def intersectWithExcrement = false
 	def moveAliens{
 		val alienRightmostPoint = aliensTopX +
